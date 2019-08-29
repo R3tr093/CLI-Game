@@ -10,7 +10,6 @@ const clear = require('clear');
 
 let hero = null;
 
-
 // JSON  exploitation 
 
 const content = fs.readFileSync("content.json");
@@ -36,7 +35,7 @@ const newLineDouble = "\n\n ";
 
 
 
-// Create a hero ** Return a new hero
+// Create a hero ** Return a new hero☠ ☠ ☠
 
 const createHero = () => {
 
@@ -125,6 +124,7 @@ const createMonster = (Health,Strength,Weapon,Level,Name) => {
             this.Weapon = Weapon;
             this.Level = Level;
             this.Name = Name;
+            this.Damage = this.Weapon + this.Strength;
         }
             
         get info() {
@@ -137,6 +137,12 @@ const createMonster = (Health,Strength,Weapon,Level,Name) => {
     
             return log(error("   ~ ☠ ☠ ☠ " + this.Name + " ☠ ☠ ☠ ~ ") + newLine + error(boxen(infos,{padding: 1, margin: 1, 'borderColor': 'red', 'backgroundColor' :'white', borderStyle: 'classic'})));
     
+        }
+
+        set monsterHealth(param){
+                    
+            this.Health = param;
+        
         }
 
     
@@ -175,12 +181,11 @@ Lizard = createMonster(30,2,1,1,"Lizard");
  };
  
 
- // Battle Phase
+ // Battle Phase return endPhase as result
 
  const battlePhase = async (player,opponent,priority) => {
 
-
- 
+    let endPhase;
 
     const battleOptions = () => {
    
@@ -190,8 +195,8 @@ Lizard = createMonster(30,2,1,1,"Lizard");
         {
           type: "list",
           name: "O",
-          message: basic("Que faîtes vous ? : "),
-          choices: ["- Attaquer ","- Fuir",],
+          message: basic(" what do you decide : "),
+          choices: ["- Attack ","- Try to run away",],
         }
     
       ];
@@ -210,36 +215,296 @@ Lizard = createMonster(30,2,1,1,"Lizard");
         // Hide
         const react = () => {
     
-            if(X.O === "- Attaquer ")
+
+        
+
+
+            if(X.O === "- Attack ")
             {
-                log(" Une attaque");
-                return "Kill"
-                
+                // go to battle mode
+
+                log(" -----------------------------------------------------------------------------------------------------  ");
+                log(chalk`                                {bgRed.white.bold >>> ☠ ☠ ☠  Battle Phase ☠ ☠ ☠ <<<}`);
+                log(" -----------------------------------------------------------------------------------------------------  ");
+
+                var bowEffect = false;
+                var axeEffect = false;
+                var monsterMaxHealth = opponent.Health;
+
+                while(opponent.Health > 0 && player.Health > 0)
+                {
+                   
+
+                    if(hero.Health > 0)
+                    {
+                       
+
+                        if(hero.Weapon[0] === "Bow")
+                        {
+                           
+                         
+
+                            if(!bowEffect)
+                            {
+                                for (i = 0; i < 3; i++)
+                              {
+                                var dice = rand(5) + 1;
+                                var Damage = hero.Damage + dice;
+                               
+                                opponent.monsterHealth = opponent.Health - Damage;
+                                opponent.monsterHealth = Number(opponent.Health)
+
+                                log()
+                                log(chalk` {bgBlue.white.bold >>> bonus dice score of :: ${dice}                         }`);
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} from your basic damages. you hit for >>> ${Damage} }`);
+                                log(chalk` {bgBlue.white.bold >>> ${opponent.Name} life point : ${opponent.Health}                           }`);
+                                log()
+                              }
+                           
+                                
+
+                            }
+
+                            if (bowEffect)
+                            {
+                                var dice = rand(5) + 1
+                                var Damage = Math.trunc((hero.Damage + dice) / 2);
+                                Damage = Damage;
+                               
+                                opponent.monsterHealth = opponent.Health - Damage ;
+                                opponent.monsterHealth = Math.trunc(opponent.Health)
+
+                                log()
+                                log(chalk` {bgBlue.white.bold >>> bonus dice score of :: ${dice}                         }`);
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} divide per 50%. you hit for >>> ${Damage} }`);
+                                log(chalk` {bgBlue.white.bold >>> ${opponent.Name} life point : ${opponent.Health}                           }`);
+                                log()
+                            }
+                           
+                            bowEffect = true  
+                            
+                        }
+
+                        if(hero.Weapon[0] === "Sword")
+                        {
+                            
+                            // 10% percents of total health
+                            
+                            let swordEffect = rand(9) + 1;
+                            
+
+                            if(swordEffect > 7)
+                            {
+                                
+                                swordEffect = Math.trunc(monsterMaxHealth / 10);
+                                log(chalk` {bgYellow.white.bold >>> bonus sword effect for : ${swordEffect}                        }`);
+                            }
+
+                            else
+                            {
+                                swordEffect = 0;
+                            }
+
+                            var dice = rand(5) + 1;
+                            var Damage = hero.Damage + dice + swordEffect;
+                           
+                            opponent.monsterHealth = opponent.Health - Damage;
+                            opponent.monsterHealth = Number(opponent.Health)
+
+                            log()
+                            log(chalk` {bgBlue.white.bold >>> bonus dice score of :: ${dice}                         }`);
+
+                            if(swordEffect > 0)
+                            {
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} from your basic damages, with sword bonus of ${swordEffect} you hit for >>> ${Damage} }`);
+                            }
+
+                            else
+                            {
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} from your basic damages. you hit for >>> ${Damage} }`);
+                                log(chalk` {bgBlue.white.bold >>> ${opponent.Name} life point : ${opponent.Health}                           }`);
+                                log()
+                                
+                            }
+
+                            
+                        }
+    
+                        if(hero.Weapon[0] === "Hammer")
+                        {
+                            
+                            
+                            
+                            let hammerEffect = rand(19) + 1;
+                            
+
+                            if(hammerEffect > 17 && opponent.Level < 3)
+                            {   
+                                log(chalk` {bgYellow.white.bold !!! >>> bonus hammer effect ${opponent.Name} has been executed !  }`);
+                                opponent.monsterHealth = 0;
+                                
+                            }
+
+                            else
+                            {
+                                var dice = rand(5) + 1;
+                                var Damage = hero.Damage + dice;
+                           
+                                opponent.monsterHealth = opponent.Health - Damage;
+                                opponent.monsterHealth = Number(opponent.Health)
+
+                                log()
+                                log(chalk` {bgBlue.white.bold >>> bonus dice score of :: ${dice}                         }`);
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} from your basic damages. you hit for >>> ${Damage} }`);
+                                log(chalk` {bgBlue.white.bold >>> ${opponent.Name} life point : ${opponent.Health}                           }`);
+                                log()
+                                
+                            }
+                            
+                        }
+
+                        if(hero.Weapon[0] === "Axe")
+                        {
+                            
+                            
+                            
+                            let Axe = rand(9) + 1;
+                            
+
+                            if(Axe > 6 && opponent.Level < 3 && !axeEffect)
+                            {   
+                                log(chalk` {bgYellow.white.bold !!! >>> Axe effect ${opponent.Name} damages reduced by 50% !  }`);
+                                axeEffect = true;
+                                
+                            }
+                            
+                                var dice = rand(5) + 1;
+                                var Damage = hero.Damage + dice;
+                           
+                                opponent.monsterHealth = opponent.Health - Damage;
+                                opponent.monsterHealth = Number(opponent.Health)
+
+                                log()
+                                log(chalk` {bgBlue.white.bold >>> bonus dice score of :: ${dice}                         }`);
+                                log(chalk` {bgBlue.white.bold >>> ${dice} +  ${player.Damage} from your basic damages. you hit for >>> ${Damage} }`);
+                                log(chalk` {bgBlue.white.bold >>> ${opponent.Name} life point : ${opponent.Health}                           }`);
+                                log()
+                                                            
+                            
+                        }
+
+                        
+
+                        if(opponent.Health > 0 && !axeEffect)
+                        {
+                            
+                            dice = rand(5) + 1;
+                            Damage = opponent.Damage + dice;
+
+                            player.heroHealth = player.Health - Damage;
+    
+                            log()
+                            log(chalk` {bgWhite.red.bold >>> bonus dice score of :: ${dice}                         }`);
+                            log(chalk` {bgWhite.red.bold >>> ${opponent.Name} hit you for ${opponent.Damage} basic damages with a bonus dice score of :: ${dice} >> ${Damage} }`);
+                            log(chalk` {bgWhite.red.bold >>> your life points have been reduced to ${hero.Health}                    }`);
+                            log()
+    
+                            
+                        
+                         }
+
+                         if(opponent.Health > 0 && axeEffect)
+                         {
+                             
+                             dice = rand(5) + 1;
+                             Damage = opponent.Damage + dice;
+                             Damage = Math.trunc(Damage / 2);
+ 
+                             player.heroHealth = player.Health - Damage;
+     
+                             log()
+                             log(chalk` {bgWhite.red.bold >>> bonus dice score of :: ${dice}                         }`);
+                             log(chalk` {bgYellow.white.bold >>> ${opponent.Name} hit you for ${opponent.Damage} basic damages with a bonus dice score of :: ${dice} reduced by 50% >> ${Damage}.  }`);
+                             log(chalk` {bgWhite.red.bold >>> your life points have been reduced to ${hero.Health}                    }`);
+                             log()
+     
+                             
+                         
+                         }
+    
+                    }
+
+
+
+
+                }
+
+                if(player.Health <= 0)
+                {
+                    
+                    log()
+                    log()
+                    endPhase = "Vous avez perdu.";
+                    log()
+                    log()
+                }
+
+                if(opponent.Health <= 0)
+                {
+                    log(newLineDouble )
+                    endPhase = "Vous avez triomphé";
+                    log(newLineDouble )
+                    hero.info
+                }
+
+                log(" -----------------------------------------------------------------------------------------------------  ");
+                log(chalk`                                {bgRed.white.bold >>> ☠ ☠ ☠  END Battle Phase ☠ ☠ ☠ <<<}`);
+                log(" -----------------------------------------------------------------------------------------------------  ");
+
+
                 
             }
     
-            if(X.O === "- Fuir")
+            if(X.O === "- Try to run away")
             {
                 let tryEscape = rand(5) + 1;
                 
                 if(tryEscape >= 5)
                 {
-                    log(warning("Success"))
+                    log();
+                    
+                    log(warning("Success"));
+
+                    log();
+
+                    //end the battle
+                    endPhase = log(warning(" You escaped from this monster."));
+                    
                     
                 }
 
                 else
                 {
+                    
+                    log();
+                    
                     log(error("Fail"));
+
+
+                    log();
+
+                    // go to battle mode 
+
+                    endPhase = " Has failed to escape and fight";
                 }
                 
-                return "Escape"
+               
             }
         }
     
     
         let result = await react();
-
+      
     
     }
 
@@ -249,6 +514,7 @@ Lizard = createMonster(30,2,1,1,"Lizard");
 
     let resolved = await resolveBattle(Q);
 
+    return endPhase;
 
 
 
@@ -350,25 +616,6 @@ const askQuestions = (message,C1,C2,C3,C4) => {
 };
 
 
-const askQuestions2 = (message,C1,C2) => {
-   
-
-
-    const questions = [
-    {
-      type: "list",
-      name: "R",
-      message: error(message),
-      choices: ["1-" + C1,"2-" + C2,],
-    }
-
-  ];
-
-  return inquirer.prompt(questions);
- 
-};
-
-
 const resolveAnswer = (Output,Response,key) => {
     
     let Q = Response; // Get the answer of user 
@@ -454,20 +701,37 @@ const resolveAnswer = (Output,Response,key) => {
 
 }
 
+const askQuestions2 = (message,C1,C2) => {
+   
+
+
+    const questions = [
+    {
+      type: "list",
+      name: "R",
+      message: error(message),
+      choices: ["1-" + C1,"2-" + C2,],
+    }
+
+  ];
+
+  return inquirer.prompt(questions);
+ 
+};
 
 const resolveAnswer2 = (Output,Response,key) => {
     
-   
+    let report = -1; 
 
     let Q = Response; // Get the answer of user 
 
     let value = Number(Q.R.charAt(0)) - 1;
 
-    log(warning(Output[value]));
+     jsonCast(Output[value]);
 
     // Hide
-    function react ()
-    {
+    const react = async () => {
+    
        
         if(key === 3)
         {
@@ -475,9 +739,11 @@ const resolveAnswer2 = (Output,Response,key) => {
 
             Lizard.info
 
-            log(rand(5) + 1); 
+            report = await battlePhase(hero,Lizard,true)
+ 
+            Q = report;
 
-            return battlePhase(hero,Lizard,true)
+            log(Q)
 
             
         }
@@ -539,7 +805,7 @@ const run = async () => {
      Q = answers;
 
      resolved = await resolveAnswer2(resultQuestions.Q3,Q,3);
-
+    
      
 
 

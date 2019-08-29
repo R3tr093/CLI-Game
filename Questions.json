@@ -1,7 +1,7 @@
 {
-    "Q1": ["Gain Bonus smartness","Gain Bonus Luck.","Gain Strength","Gain bonus life."],
+    "Q1": ["Smartness increased by two","Luckiness increased by two.","Strength increased by two ","Health increased by 25"],
    
-    "Q2": ["Get sword","Get bow.","Gain hammer","Gain axe."],
+    "Q2": ["You obtained a sword"," You obtained a bow."," You obtained a hammer"," You obtained an axe."],
    
-    "Q3": ["Battle"]
+    "Q3": ["Battle","Battle"]
 }
