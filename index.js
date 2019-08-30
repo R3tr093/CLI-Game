@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 
 // Placeholder dependencies and other's stuff required
 
@@ -7,8 +9,13 @@ const boxen = require("boxen");
 const inquirer = require("inquirer");
 const fs = require("fs");
 const clear = require('clear');
+const wait = delay=>new Promise(res=>setTimeout(res,delay))
 
 let hero = null;
+
+let pos = null;
+
+let endPhase;
 
 // JSON  exploitation 
 
@@ -35,7 +42,7 @@ const newLineDouble = "\n\n ";
 
 
 
-// Create a hero ** Return a new hero☠ ☠ ☠
+// Create a hero ** Return a new hero
 
 const createHero = () => {
 
@@ -48,15 +55,38 @@ const createHero = () => {
             this.Perception = 0;
             this.Smartness = 0;
             this.Luck = 0;
+            this.Bag = ["Ring"];
         }
             
                 get info() {
                     
-                    //clear();
+                    
                     let infos = " Health :: " + this.Health + newLineDouble + "Strength :: " + this.Strength + newLineDouble + "Weapon :: " + this.Weapon[0] +  newLineDouble+ "Damage :: " + this.Damage;
                     let infos2 = newLineDouble + "Perception :: " + this.Perception + newLineDouble + "Smartness :: " + this.Smartness + newLineDouble + "Luck :: " + this.Luck;
 
                     return log(basic("  ~ ☠ ☠ ☠ Hero board ☠ ☠ ☠ ~ ") + newLine + warning(boxen(infos + infos2, {padding: 1, margin: 1, borderStyle: 'round'})));
+  
+                }
+
+                get bagInfo() {
+                    
+                    let i = 0;
+
+                    let strBag = "";
+
+                    let target = this.Bag;
+
+                    while(i < target.length)
+                    {
+                        
+                        strBag = strBag + "- " + target[i] + "\n";
+                        
+                        i++;
+
+                    }
+                    
+
+                    return log(basic("  ~ Inventory ~ ") + newLine + basic(boxen(strBag, {padding: 1, margin: 1, borderStyle: 'round','borderColor': "white"})));
   
                 }
             
@@ -95,6 +125,7 @@ const createHero = () => {
                 set heroDamage(param){
                     this.Damage = param ;
                 }
+
     
     }
     
@@ -161,7 +192,7 @@ const createMonster = (Health,Strength,Weapon,Level,Name) => {
 
 // Some monsters
 
-Lizard = createMonster(30,2,1,1,"Lizard");
+Goblin = createMonster(30,2,1,1,"Goblin");
 
 
 
@@ -185,7 +216,7 @@ Lizard = createMonster(30,2,1,1,"Lizard");
 
  const battlePhase = async (player,opponent,priority) => {
 
-    let endPhase;
+   
 
     const battleOptions = () => {
    
@@ -210,18 +241,73 @@ Lizard = createMonster(30,2,1,1,"Lizard");
     
         let X = Q; 
     
-      
-    
-        // Hide
-        const react = () => {
-    
-
         
 
+         
+    
+        // Hide
+        const react = async () => {
+    
+           
+            
 
-            if(X.O === "- Attack ")
+            if(X.O === "- Try to run away")
+            {
+                
+                
+
+                var escape = false;
+
+                let tryEscape = rand(5) + 1;
+                
+                log();
+
+                log(chalk` {bgBlue.white.bold >>> escape score of :: ${tryEscape} }`);
+
+                if(tryEscape >= 5)
+                {
+                    log();
+                    
+                    log(warning("Success"));
+
+                    log();
+
+                    escape = true;
+
+                    //end the battle
+                    endPhase = warning(" You successfully escaped from this monster.");
+                    
+                    
+                }
+
+                
+               
+
+                if(!escape)
+                {
+                   
+
+                    log();
+                    
+                    log(error(" > > > Has failed to escape and fight"));
+
+
+                    log();
+                }
+
+                await wait(1500);
+                clear();
+                
+               
+            }
+        
+
+           
+
+            if(X.O === "- Attack " || !escape)
             {
                 // go to battle mode
+
 
                 log(" -----------------------------------------------------------------------------------------------------  ");
                 log(chalk`                                {bgRed.white.bold >>> ☠ ☠ ☠  Battle Phase ☠ ☠ ☠ <<<}`);
@@ -231,7 +317,8 @@ Lizard = createMonster(30,2,1,1,"Lizard");
                 var axeEffect = false;
                 var monsterMaxHealth = opponent.Health;
 
-                while(opponent.Health > 0 && player.Health > 0)
+
+                while(opponent.Health > 0 && player.Health > 0 && !escape)
                 {
                    
 
@@ -444,7 +531,7 @@ Lizard = createMonster(30,2,1,1,"Lizard");
                     
                     log()
                     log()
-                    endPhase = "Vous avez perdu.";
+                    endPhase = [error("Vous avez perdu."),0];
                     log()
                     log()
                 }
@@ -452,7 +539,7 @@ Lizard = createMonster(30,2,1,1,"Lizard");
                 if(opponent.Health <= 0)
                 {
                     log(newLineDouble )
-                    endPhase = "Vous avez triomphé";
+                    endPhase = [warning("Vous avez triomphé"),1];
                     log(newLineDouble )
                     hero.info
                 }
@@ -460,46 +547,14 @@ Lizard = createMonster(30,2,1,1,"Lizard");
                 log(" -----------------------------------------------------------------------------------------------------  ");
                 log(chalk`                                {bgRed.white.bold >>> ☠ ☠ ☠  END Battle Phase ☠ ☠ ☠ <<<}`);
                 log(" -----------------------------------------------------------------------------------------------------  ");
+                log()
+                log()
 
 
                 
             }
     
-            if(X.O === "- Try to run away")
-            {
-                let tryEscape = rand(5) + 1;
-                
-                if(tryEscape >= 5)
-                {
-                    log();
-                    
-                    log(warning("Success"));
 
-                    log();
-
-                    //end the battle
-                    endPhase = log(warning(" You escaped from this monster."));
-                    
-                    
-                }
-
-                else
-                {
-                    
-                    log();
-                    
-                    log(error("Fail"));
-
-
-                    log();
-
-                    // go to battle mode 
-
-                    endPhase = " Has failed to escape and fight";
-                }
-                
-               
-            }
         }
     
     
@@ -514,42 +569,23 @@ Lizard = createMonster(30,2,1,1,"Lizard");
 
     let resolved = await resolveBattle(Q);
 
-    return endPhase;
+    // Customing resolve
 
-
-
-
-    // while oppponent or player health is > 0
-
-    // if player  or opponent life > 70 % add damage bonus
-
-    // Effect probility calcul
-
-    //Do a random asylum to get damage
-
-    // Substract health
-
-    // Do the same for the next
-
-    // where opponent or monster health < 1 : end
-
-
-    // defined who play in first and call the function
-    
-    
-   /* if(priority)
+    if(opponent.Name === "Goblin" && endPhase[1] > 0)
     {
-
+        log()
+        return warning(endPhase[0]);
+     
     }
 
     else
     {
-        
+        return error(endPhase[0]);
     }
-    */
 
-
+    
  }
+
     
 
 
@@ -719,7 +755,7 @@ const askQuestions2 = (message,C1,C2) => {
  
 };
 
-const resolveAnswer2 = (Output,Response,key) => {
+const resolveAnswer2 = async (Output,Response,key) => {
     
     let report = -1; 
 
@@ -735,23 +771,31 @@ const resolveAnswer2 = (Output,Response,key) => {
        
         if(key === 3)
         {
-            log(error("Lizard incoming"));
+         
+            log(chalk` {bgWhite.red.bold !!! > > >  Goblin incoming < < < !!! }`);
 
-            Lizard.info
+            Goblin.info
 
-            report = await battlePhase(hero,Lizard,true)
+            report = await battlePhase(hero,Goblin,true)
  
             Q = report;
 
-            log(Q)
-
+            return log(Q)
             
         }
     }
 
-    react();
+    var resume = await react();
 
+    if(endPhase[1] > 0)
+    {
+        return "Chapitre suivant."
+    }
 
+    else
+    return "Prout";
+
+    
 
 
 }
@@ -770,6 +814,14 @@ const run = async () => {
     
     hero.info
 
+    //hero.Bag.push("prout")
+
+    hero.bagInfo
+
+    
+
+   
+
     // Chapter , answer , stocking answers , resolve. 
 
     let chapter = await jsonCast(result.p1);
@@ -778,9 +830,12 @@ const run = async () => {
 
     let Q = answers; 
 
+    await wait(0500);
+
+    clear();
+
     let resolved = await resolveAnswer(resultQuestions.Q1,Q,1);
 
-     //clear();
 
      log();
 
@@ -792,19 +847,76 @@ const run = async () => {
  
      Q = answers;
 
+     await wait(0500);
+
+     clear();
+
      resolved = await resolveAnswer(resultQuestions.Q2,Q,2);
 
      
      
-     // Duo question Example
-
-     chapter = await jsonCast(result.p3);
-
-     answers = await askQuestions2(warning(" Are you sure :  "),"Yes","Nope"); 
  
-     Q = answers;
 
      resolved = await resolveAnswer2(resultQuestions.Q3,Q,3);
+
+     Q = resolved;
+
+     if(Q === "Chapitre suivant.")
+     {
+         chapter = await jsonCast(result.p4);
+
+         await wait(2500);
+
+         chapter = await jsonCast(result.p5);
+
+         // duo choices
+
+         answers = await askQuestions2(warning(" What do you decide ? :  "), " Run away "," Look at the corpse to fill your curiosity."); 
+     
+         Q = answers;
+
+         if(Q.R === " Run away ")
+         {
+            chapter = await jsonCast(result.p7);
+            answers = await askQuestions2(warning(" What do you decide ? :  "), "Let chance guide you through the forest."," Go in the opposite direction of the strange creature."); 
+         }
+
+         else
+         {
+            chapter = await jsonCast(result.p6);
+            log(error("Health decreased 5."))
+            hero.heroHealth = hero.Health - 5;
+            hero.info
+            chapter = await jsonCast(result.p7);
+            answers = await askQuestions2(warning(" What do you decide ? :  "), "Let chance guide you through the forest."," Go in the opposite direction of the strange creature."); 
+         }
+
+         clear();
+       
+         Q = answers;
+    
+         await wait(0500);
+
+         if(Q.R === "Let chance guide you through the forest.")
+         {
+            log("Hasard")
+         }
+
+         else
+         {
+             log("Not hasard")
+         }
+        
+    
+         
+     }
+
+
+
+
+
+
+
     
      
 

@@ -1,20 +1,34 @@
 {
-  "name": "story",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@hamilton19/raven",
+  "version": "1.0.5",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "bin": {
+    "play": "./index.js"
+  },
   "dependencies": {
     "boxen": "^4.1.0",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
+    "debug": "^4.1.1",
     "figlet": "^1.2.3",
     "fs": "0.0.1-security",
     "inquirer": "^7.0.0",
     "parse-json": "^5.0.0"
-  }
+  },
+  "devDependencies": {},
+  "description": "<p> I just build a game coz i really like wasting my time.</p>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/R3tr093/CLI-Game.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/R3tr093/CLI-Game/issues"
+  },
+  "homepage": "https://github.com/R3tr093/CLI-Game#readme"
 }
